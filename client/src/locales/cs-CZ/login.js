@@ -12,11 +12,11 @@ export default {
       or: 'Nebo',
       pageNotFound_title: 'Stránka nenalezena',
       password: 'Heslo',
-      poweredByPlanka: 'Poháněno technologií PLANKA',
+      poweredByPlanka: 'Poháněno technologií <1>PLANKA</1>',
       serverConnectionFailed: 'Připojení k serveru selhalo',
       unknownError: 'Neznámá chyba, zkuste to později',
-      usernameAlreadyInUse: 'Uživatelské jméno se již používá',
       useSingleSignOn: 'Použít jednorázové přihlášení',
+      usernameAlreadyInUse: 'Uživatelské jméno se již používá',
     },
 
     action: {

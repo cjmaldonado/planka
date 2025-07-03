@@ -19,7 +19,7 @@ const buildTitle = (action, t) => {
 
 const buildBodyByFormat = (board, card, action, actorUser, t) => {
   const markdownCardLink = `[${escapeMarkdown(card.name)}](${sails.config.custom.baseUrl}/cards/${card.id})`;
-  const htmlCardLink = `<a href="${sails.config.custom.baseUrl}/cards/${card.id}}">${escapeHtml(card.name)}</a>`;
+  const htmlCardLink = `<a href="${sails.config.custom.baseUrl}/cards/${card.id}">${escapeHtml(card.name)}</a>`;
 
   switch (action.type) {
     case Action.Types.CREATE_CARD: {
@@ -115,6 +115,7 @@ module.exports = {
 
     const action = await Action.qm.createOne({
       ...values,
+      boardId: values.card.boardId,
       cardId: values.card.id,
       userId: values.user.id,
     });
@@ -142,56 +143,73 @@ module.exports = {
       user: values.user,
     });
 
-    if (action.type !== Action.Types.CREATE_CARD) {
-      const cardSubscriptionUserIds = await sails.helpers.cards.getSubscriptionUserIds(
-        action.cardId,
-        action.userId,
-      );
-
-      const boardSubscriptionUserIds = await sails.helpers.boards.getSubscriptionUserIds(
-        inputs.board.id,
-        action.userId,
-      );
-
-      const notifiableUserIds = _.union(cardSubscriptionUserIds, boardSubscriptionUserIds);
-
-      await Promise.all(
-        notifiableUserIds.map((userId) =>
-          sails.helpers.notifications.createOne.with({
+    if (Action.INTERNAL_NOTIFIABLE_TYPES.includes(action.type)) {
+      if (Action.PERSONAL_NOTIFIABLE_TYPES.includes(action.type)) {
+        if (values.user.id !== action.data.user.id) {
+          await sails.helpers.notifications.createOne.with({
             values: {
-              userId,
               action,
               type: action.type,
-              data: {
-                ...action.data,
-                card: _.pick(values.card, ['name']),
-              },
+              data: action.data,
+              userId: action.data.user.id,
               creatorUser: values.user,
               card: values.card,
             },
             project: inputs.project,
             board: inputs.board,
             list: inputs.list,
-          }),
-        ),
-      );
+          });
+        }
+      } else {
+        const cardSubscriptionUserIds = await sails.helpers.cards.getSubscriptionUserIds(
+          action.cardId,
+          action.userId,
+        );
+
+        const boardSubscriptionUserIds = await sails.helpers.boards.getSubscriptionUserIds(
+          inputs.board.id,
+          action.userId,
+        );
+
+        const notifiableUserIds = _.union(cardSubscriptionUserIds, boardSubscriptionUserIds);
+
+        await Promise.all(
+          notifiableUserIds.map((userId) =>
+            sails.helpers.notifications.createOne.with({
+              values: {
+                userId,
+                action,
+                type: action.type,
+                data: action.data,
+                creatorUser: values.user,
+                card: values.card,
+              },
+              project: inputs.project,
+              board: inputs.board,
+              list: inputs.list,
+            }),
+          ),
+        );
+      }
     }
 
-    const notificationServices = await NotificationService.qm.getByBoardId(inputs.board.id);
+    if (Action.EXTERNAL_NOTIFIABLE_TYPES.includes(action.type)) {
+      const notificationServices = await NotificationService.qm.getByBoardId(inputs.board.id);
 
-    if (notificationServices.length > 0) {
-      const services = notificationServices.map((notificationService) =>
-        _.pick(notificationService, ['url', 'format']),
-      );
+      if (notificationServices.length > 0) {
+        const services = notificationServices.map((notificationService) =>
+          _.pick(notificationService, ['url', 'format']),
+        );
 
-      buildAndSendNotifications(
-        services,
-        inputs.board,
-        values.card,
-        action,
-        values.user,
-        sails.helpers.utils.makeTranslator(),
-      );
+        buildAndSendNotifications(
+          services,
+          inputs.board,
+          values.card,
+          action,
+          values.user,
+          sails.helpers.utils.makeTranslator(),
+        );
+      }
     }
 
     return action;

@@ -132,6 +132,23 @@ module.exports = {
         }),
         user: inputs.actorUser,
       });
+
+      if (inputs.record.isCompleted !== task.isCompleted) {
+        await sails.helpers.actions.createOne.with({
+          values: {
+            type: task.isCompleted ? Action.Types.COMPLETE_TASK : Action.Types.UNCOMPLETE_TASK,
+            data: {
+              card: _.pick(inputs.card, ['name']),
+              task: _.pick(task, ['id', 'name']),
+            },
+            user: inputs.actorUser,
+            card: inputs.card,
+          },
+          project: inputs.project,
+          board: inputs.board,
+          list: inputs.list,
+        });
+      }
     }
 
     return task;

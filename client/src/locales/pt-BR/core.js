@@ -1,9 +1,12 @@
 import dateFns from 'date-fns/locale/pt-BR';
 import timeAgo from 'javascript-time-ago/locale/pt';
 
+import markdownEditor from './markdown-editor.json';
+
 export default {
   dateFns,
   timeAgo,
+  markdownEditor,
 
   format: {
     date: 'dd/MM/yyyy',
@@ -61,7 +64,6 @@ export default {
       currentPassword: 'Senha atual',
       dangerZone_title: 'Zona de Perigo',
       date: 'Data',
-      dueDate_title: 'Data de Vencimento',
       deleteAttachment_title: 'Excluir Anexo',
       deleteBoard_title: 'Excluir Quadro',
       deleteCard_title: 'Excluir Cartão',
@@ -74,7 +76,7 @@ export default {
       description: 'Descrição',
       detectAutomatically: 'Detectar automaticamente',
       dropFileToUpload: 'Solte o arquivo para enviar',
-      editor: 'Editor',
+      dueDate_title: 'Data de Vencimento',
       editAttachment_title: 'Editar Anexo',
       editAvatar_title: 'Editar Avatar',
       editDueDate_title: 'Editar Data de Vencimento',
@@ -85,6 +87,7 @@ export default {
       editPermissions_title: 'Editar Permissões',
       editStopwatch_title: 'Editar Cronômetro',
       editUsername_title: 'Editar Nome de Usuário',
+      editor: 'Editor',
       email: 'E-mail',
       enterCardTitle: 'Digite o título do cartão...',
       enterDescription: 'Digite a descrição...',
@@ -113,12 +116,12 @@ export default {
       newEmail: 'Novo e-mail',
       newPassword: 'Nova senha',
       newUsername: 'Novo nome de usuário',
-      noConnectionToServer: 'Sem conexão com o servidor',
       noBoards: 'Sem quadros',
+      noConnectionToServer: 'Sem conexão com o servidor',
       noLists: 'Sem listas',
       noProjects: 'Sem projetos',
-      notifications: 'Notificações',
       noUnreadNotifications: 'Nenhuma notificação não lida.',
+      notifications: 'Notificações',
       openBoard_title: 'Abrir Quadro',
       optional_inline: 'opcional',
       organization: 'Organização',
@@ -147,12 +150,13 @@ export default {
       time: 'Tempo',
       title: 'Título',
       userActions_title: 'Ações do Usuário',
-      userAddedThisCardToList: '<0>{{user}}</0><1> adicionou este cartão a {{list}}</1>',
+      userAddedThisCardToList: '<0>{{user}}</0> adicionou este cartão a {{list}}',
       userLeftNewCommentToCard:
-        '{{user}} deixou um novo comentário «{{comment}}» em <2>{{card}}</2>',
-      userMovedCardFromListToList: '{{user}} moveu <2>{{card}}</2> de {{fromList}} para {{toList}}',
+        '<0>{{user}}</0> deixou um novo comentário «{{comment}}» em <2>{{card}}</2>',
+      userMovedCardFromListToList:
+        '<0>{{user}}</0> moveu <2>{{card}}</2> de {{fromList}} para {{toList}}',
       userMovedThisCardFromListToList:
-        '<0>{{user}}</0><1> moveu este cartão de {{fromList}} para {{toList}}</1>',
+        '<0>{{user}}</0> moveu este cartão de {{fromList}} para {{toList}}',
       username: 'Nome de usuário',
       users: 'Usuários',
       viewer: 'Visualizador',
@@ -193,8 +197,8 @@ export default {
       deleteTask_title: 'Excluir Tarefa',
       deleteUser: 'Excluir usuário',
       edit: 'Editar',
-      editDueDate_title: 'Editar Data de Vencimento',
       editDescription_title: 'Editar Descrição',
+      editDueDate_title: 'Editar Data de Vencimento',
       editEmail_title: 'Editar E-mail',
       editInformation_title: 'Editar Informações',
       editPassword_title: 'Editar Senha',

@@ -28,6 +28,11 @@
     }
   }
 
+  .colorLine {
+    border-radius: 0 0 3px 3px;
+    height: 4px;
+  }
+
   .content {
     cursor: pointer;
 
@@ -36,6 +41,11 @@
       content: "";
       display: table;
     }
+  }
+
+  .contentDisabled {
+    filter: saturate(0.5);
+    opacity: 0.64;
   }
 
   .wrapper {
@@ -52,11 +62,6 @@
         opacity: 1;
       }
     }
-  }
-
-  .wrapperDisabled {
-    filter: saturate(0.5);
-    opacity: 0.64;
   }
 
   .wrapperRecent:not(:hover) {

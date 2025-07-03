@@ -67,10 +67,16 @@ module.exports = {
       throw Errors.NOT_ENOUGH_RIGHTS;
     }
 
-    const isBoardMember = await sails.helpers.users.isBoardMember(inputs.userId, board.id);
+    const user = await User.qm.getOneById(inputs.userId);
+
+    if (!user) {
+      throw Errors.USER_NOT_FOUND;
+    }
+
+    const isBoardMember = await sails.helpers.users.isBoardMember(user.id, board.id);
 
     if (!isBoardMember) {
-      throw Errors.USER_NOT_FOUND;
+      throw Errors.USER_NOT_FOUND; // Forbidden
     }
 
     const cardMembership = await sails.helpers.cardMemberships.createOne
@@ -80,7 +86,7 @@ module.exports = {
         list,
         values: {
           card,
-          userId: inputs.userId,
+          user,
         },
         actorUser: currentUser,
         request: this.req,

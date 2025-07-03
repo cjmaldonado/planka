@@ -12,11 +12,11 @@ export default {
       or: 'Or',
       pageNotFound_title: 'Page Not Found',
       password: 'Password',
-      poweredByPlanka: 'Powered by PLANKA',
+      poweredByPlanka: 'Powered by <1>PLANKA</1>',
       serverConnectionFailed: 'Server connection failed',
       unknownError: 'Unknown error, try again later',
-      usernameAlreadyInUse: 'Username already in use',
       useSingleSignOn: 'Use single sign-on',
+      usernameAlreadyInUse: 'Username already in use',
     },
 
     action: {

@@ -1,9 +1,12 @@
 import dateFns from 'date-fns/locale/id';
 import timeAgo from 'javascript-time-ago/locale/id';
 
+import markdownEditor from './markdown-editor.json';
+
 export default {
   dateFns,
   timeAgo,
+  markdownEditor,
 
   format: {
     date: 'dd MMM yyyy',
@@ -61,7 +64,6 @@ export default {
       currentPassword: 'Kata sandi sekarang',
       dangerZone_title: 'Zona Berbahaya',
       date: 'Tanggal',
-      dueDate_title: 'Tenggat Waktu',
       deleteAttachment_title: 'Hapus Lampiran',
       deleteBoard_title: 'Hapus Papan',
       deleteCard_title: 'Hapus Kartu',
@@ -74,7 +76,7 @@ export default {
       description: 'Deskripsi',
       detectAutomatically: 'Deteksi otomatis',
       dropFileToUpload: 'Tarik berkas untuk menggungah',
-      editor: 'Pengubah',
+      dueDate_title: 'Tenggat Waktu',
       editAttachment_title: 'Ubah Lampiran',
       editAvatar_title: 'Ubah Avatar',
       editDueDate_title: 'Ubah Tenggat Waktu',
@@ -85,6 +87,7 @@ export default {
       editPermissions_title: 'Ubah Izin',
       editStopwatch_title: 'Ubah Stopwatch',
       editUsername_title: 'Ubah Username',
+      editor: 'Pengubah',
       email: 'E-mail',
       enterCardTitle: 'Masukkan judul kartu...',
       enterDescription: 'Masukkan deskripsi...',
@@ -113,12 +116,12 @@ export default {
       newEmail: 'E-mail baru',
       newPassword: 'Kata sandi baru',
       newUsername: 'Username baru',
-      noConnectionToServer: 'Tidak ada koneksi ke server',
       noBoards: 'Tidak ada papan',
+      noConnectionToServer: 'Tidak ada koneksi ke server',
       noLists: 'Tidak ada daftar',
       noProjects: 'Tidak ada projek',
-      notifications: 'Notifikasi',
       noUnreadNotifications: 'Tiada notifikasi yang belum dibaca.',
+      notifications: 'Notifikasi',
       openBoard_title: 'Buka Papan',
       optional_inline: 'opsional',
       organization: 'Organisasi',
@@ -147,12 +150,12 @@ export default {
       time: 'Waktu',
       title: 'Judul',
       userActions_title: 'Aksi Pengguna',
-      userAddedThisCardToList: '<0>{{user}}</0><1> menambahkan kartu ini ke {{list}}</1>',
-      userLeftNewCommentToCard: '{{user}} mengomentari «{{comment}}» di <2>{{card}}</2>',
+      userAddedThisCardToList: '<0>{{user}}</0> menambahkan kartu ini ke {{list}}',
+      userLeftNewCommentToCard: '<0>{{user}}</0> mengomentari «{{comment}}» di <2>{{card}}</2>',
       userMovedCardFromListToList:
-        '{{user}} memindahkan <2>{{card}}</2> dari {{fromList}} ke {{toList}}',
+        '<0>{{user}}</0> memindahkan <2>{{card}}</2> dari {{fromList}} ke {{toList}}',
       userMovedThisCardFromListToList:
-        '<0>{{user}}</0><1> memindahkan kartu ini dari {{fromList}} ke {{toList}}</1>',
+        '<0>{{user}}</0> memindahkan kartu ini dari {{fromList}} ke {{toList}}',
       username: 'Username',
       users: 'Pengguna',
       viewer: 'Penglihat',
@@ -193,8 +196,8 @@ export default {
       deleteTask_title: 'Hapus Tugas',
       deleteUser: 'Hapus pengguna',
       edit: 'Ubah',
-      editDueDate_title: 'Ubah Tenggat Waktu',
       editDescription_title: 'Ubdah Deskripsi',
+      editDueDate_title: 'Ubah Tenggat Waktu',
       editEmail_title: 'Ubah E-mail',
       editInformation_title: 'Ubah Informasi',
       editPassword_title: 'Ubah Kata Sandi',

@@ -90,11 +90,17 @@ export const AttachmentTypes = {
 export const ActivityTypes = {
   CREATE_CARD: 'createCard',
   MOVE_CARD: 'moveCard',
+  ADD_MEMBER_TO_CARD: 'addMemberToCard',
+  REMOVE_MEMBER_FROM_CARD: 'removeMemberFromCard',
+  COMPLETE_TASK: 'completeTask',
+  UNCOMPLETE_TASK: 'uncompleteTask',
 };
 
 export const NotificationTypes = {
   MOVE_CARD: 'moveCard',
   COMMENT_CARD: 'commentCard',
+  ADD_MEMBER_TO_CARD: 'addMemberToCard',
+  MENTION_IN_COMMENT: 'mentionInComment',
 };
 
 export const NotificationServiceFormats = {

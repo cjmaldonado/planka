@@ -6,10 +6,12 @@
 const escapeMarkdown = require('escape-markdown');
 const escapeHtml = require('escape-html');
 
+const { extractMentionIds, formatTextWithMentions } = require('../../../utils/mentions');
+
 const buildAndSendNotifications = async (services, board, card, comment, actorUser, t) => {
   const markdownCardLink = `[${escapeMarkdown(card.name)}](${sails.config.custom.baseUrl}/cards/${card.id})`;
   const htmlCardLink = `<a href="${sails.config.custom.baseUrl}/cards/${card.id}}">${escapeHtml(card.name)}</a>`;
-  const commentText = _.truncate(comment.text);
+  const commentText = _.truncate(formatTextWithMentions(comment.text));
 
   await sails.helpers.utils.sendNotifications(services, t('New Comment'), {
     text: `${t(
@@ -91,6 +93,19 @@ module.exports = {
       user: values.user,
     });
 
+    let mentionUserIds = extractMentionIds(comment.text);
+
+    if (mentionUserIds.length > 0) {
+      const boardMemberUserIds = await sails.helpers.boards.getMemberUserIds(inputs.board.id);
+
+      mentionUserIds = _.difference(
+        _.intersection(mentionUserIds, boardMemberUserIds),
+        comment.userId,
+      );
+    }
+
+    const mentionUserIdsSet = new Set(mentionUserIds);
+
     const cardSubscriptionUserIds = await sails.helpers.cards.getSubscriptionUserIds(
       comment.cardId,
       comment.userId,
@@ -101,7 +116,11 @@ module.exports = {
       comment.userId,
     );
 
-    const notifiableUserIds = _.union(cardSubscriptionUserIds, boardSubscriptionUserIds);
+    const notifiableUserIds = _.union(
+      mentionUserIds,
+      cardSubscriptionUserIds,
+      boardSubscriptionUserIds,
+    );
 
     await Promise.all(
       notifiableUserIds.map((userId) =>
@@ -109,7 +128,9 @@ module.exports = {
           values: {
             userId,
             comment,
-            type: Notification.Types.COMMENT_CARD,
+            type: mentionUserIdsSet.has(userId)
+              ? Notification.Types.MENTION_IN_COMMENT
+              : Notification.Types.COMMENT_CARD,
             data: {
               card: _.pick(values.card, ['name']),
               text: comment.text,

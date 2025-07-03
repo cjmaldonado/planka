@@ -12,31 +12,37 @@ services:
     ports:
       - 1337:1337
     environment:
+      - BASE_URL=http://localhost:1337
       - DATABASE_URL=postgresql://postgres@postgres/planka
       - SECRET_KEY=notsecretkey
 
       # - LOG_LEVEL=warn
 
-      # - TRUST_PROXY=0
+      # - TRUST_PROXY=true
       # - TOKEN_EXPIRES_IN=365 # In days
 
       # related: https://github.com/knex/knex/issues/2354
-      # As knex does not pass query parameters from the connection string we
-      # have to use environment variables in order to pass the desired values, e.g.
+      # As knex does not pass query parameters from the connection string,
+      # we have to use environment variables in order to pass the desired values, e.g.
       # - PGSSLMODE=<value>
 
       # Configure knex to accept SSL certificates
       # - KNEX_REJECT_UNAUTHORIZED_SSL_CERTIFICATE=false
 
-      # - DEFAULT_LANGUAGE=en-US # Used for per-board notifications
+      # Used for per-board notifications
+      # - DEFAULT_LANGUAGE=en-US
 
-      # - DEFAULT_ADMIN_EMAIL=demo@demo.demo # Do not remove if you want to prevent this user from being edited/deleted
+      # Do not comment out DEFAULT_ADMIN_EMAIL if you want to prevent this user from being edited/deleted
+      # - DEFAULT_ADMIN_EMAIL=demo@demo.demo
       # - DEFAULT_ADMIN_PASSWORD=demo
       # - DEFAULT_ADMIN_NAME=Demo Demo
       # - DEFAULT_ADMIN_USERNAME=demo
 
       # - ACTIVE_USERS_LIMIT=
-      # - SHOW_DETAILED_AUTH_ERRORS=false # Set to true to show more detailed authentication error messages. It should not be enabled without a rate limiter for security reasons.
+
+      # Set to true to show more detailed authentication error messages.
+      # It should not be enabled without a rate limiter for security reasons.
+      # - SHOW_DETAILED_AUTH_ERRORS=false
 
       # - S3_ENDPOINT=
       # - S3_REGION=
@@ -54,6 +60,8 @@ services:
       # - OIDC_RESPONSE_MODE=fragment
       # - OIDC_USE_DEFAULT_RESPONSE_MODE=true
       # - OIDC_ADMIN_ROLES=admin
+      # - OIDC_PROJECT_OWNER_ROLES=project_owner
+      # - OIDC_BOARD_USER_ROLES=board_user
       # - OIDC_CLAIMS_SOURCE=userinfo
       # - OIDC_EMAIL_ATTRIBUTE=email
       # - OIDC_NAME_ATTRIBUTE=name
@@ -104,10 +112,15 @@ services:
       - POSTGRES_DB=planka
       - POSTGRES_HOST_AUTH_METHOD=trust
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d planka"]
-      interval: 10s
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-planka} && psql -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-planka} -c 'SELECT 1'",
+        ]
+      interval: 3s
       timeout: 5s
-      retries: 5
+      retries: 15
+      start_period: 10s
 
 volumes:
   db-data:

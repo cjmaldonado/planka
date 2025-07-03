@@ -53,18 +53,27 @@ export default class extends BaseModel {
         Comment.upsert(payload.comment);
 
         break;
-      case ActionTypes.COMMENT_CREATE__FAILURE:
-        Comment.withId(payload.localId).delete();
+      case ActionTypes.COMMENT_CREATE__FAILURE: {
+        const commentModel = Comment.withId(payload.localId);
+        commentModel.delete();
+
+        if (commentModel.card) {
+          commentModel.card.commentsTotal -= 1;
+        }
 
         break;
+      }
       case ActionTypes.COMMENT_UPDATE:
         Comment.withId(payload.id).update(payload.data);
 
         break;
-      case ActionTypes.COMMENT_DELETE:
-        Comment.withId(payload.id).delete();
+      case ActionTypes.COMMENT_DELETE: {
+        const commentModel = Comment.withId(payload.id);
+        commentModel.delete();
+        commentModel.card.commentsTotal -= 1;
 
         break;
+      }
       case ActionTypes.COMMENT_DELETE__SUCCESS:
       case ActionTypes.COMMENT_DELETE_HANDLE: {
         const commentModel = Comment.withId(payload.comment.id);

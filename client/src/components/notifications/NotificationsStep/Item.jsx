@@ -13,9 +13,11 @@ import { Button } from 'semantic-ui-react';
 
 import selectors from '../../../selectors';
 import entryActions from '../../../entry-actions';
+import { formatTextWithMentions } from '../../../utils/mentions';
 import Paths from '../../../constants/Paths';
 import { StaticUserIds } from '../../../constants/StaticUsers';
 import { NotificationTypes } from '../../../constants/Enums';
+import TimeAgo from '../../common/TimeAgo';
 import UserAvatar from '../../users/UserAvatar';
 
 import styles from './Item.module.scss';
@@ -67,7 +69,7 @@ const Item = React.memo(({ id, onClose }) => {
             toList: toListName,
           }}
         >
-          {creatorUserName}
+          <span className={styles.author}>{creatorUserName}</span>
           {' moved '}
           <Link to={Paths.CARDS.replace(':id', notification.cardId)} onClick={onClose}>
             {cardName}
@@ -82,7 +84,7 @@ const Item = React.memo(({ id, onClose }) => {
       break;
     }
     case NotificationTypes.COMMENT_CARD: {
-      const commentText = truncate(notification.data.text);
+      const commentText = truncate(formatTextWithMentions(notification.data.text));
 
       contentNode = (
         <Trans
@@ -93,8 +95,48 @@ const Item = React.memo(({ id, onClose }) => {
             card: cardName,
           }}
         >
-          {creatorUserName}
+          <span className={styles.author}>{creatorUserName}</span>
           {` left a new comment «${commentText}» to `}
+          <Link to={Paths.CARDS.replace(':id', notification.cardId)} onClick={onClose}>
+            {cardName}
+          </Link>
+        </Trans>
+      );
+
+      break;
+    }
+    case NotificationTypes.ADD_MEMBER_TO_CARD:
+      contentNode = (
+        <Trans
+          i18nKey="common.userAddedYouToCard"
+          values={{
+            user: creatorUserName,
+            card: cardName,
+          }}
+        >
+          <span className={styles.author}>{creatorUserName}</span>
+          {` added you to `}
+          <Link to={Paths.CARDS.replace(':id', notification.cardId)} onClick={onClose}>
+            {cardName}
+          </Link>
+        </Trans>
+      );
+
+      break;
+    case NotificationTypes.MENTION_IN_COMMENT: {
+      const commentText = truncate(formatTextWithMentions(notification.data.text));
+
+      contentNode = (
+        <Trans
+          i18nKey="common.userMentionedYouInCommentOnCard"
+          values={{
+            user: creatorUserName,
+            comment: commentText,
+            card: cardName,
+          }}
+        >
+          <span className={styles.author}>{creatorUserName}</span>
+          {` mentioned you in «${commentText}» on `}
           <Link to={Paths.CARDS.replace(':id', notification.cardId)} onClick={onClose}>
             {cardName}
           </Link>
@@ -110,7 +152,12 @@ const Item = React.memo(({ id, onClose }) => {
   return (
     <div className={styles.wrapper}>
       <UserAvatar id={notification.creatorUserId} size="large" />
-      <span className={styles.content}>{contentNode}</span>
+      <span className={styles.content}>
+        <div>{contentNode}</div>
+        <span className={styles.date}>
+          <TimeAgo date={notification.createdAt} />
+        </span>
+      </span>
       <Button
         type="button"
         icon="trash alternate outline"

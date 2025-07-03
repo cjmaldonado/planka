@@ -23,6 +23,7 @@ import { emojiDefs } from '@gravity-ui/markdown-editor/_/bundle/emoji';
 /* eslint-enable import/no-unresolved */
 
 import link from './link';
+import mention from './mention';
 
 export default [
   ins,
@@ -36,9 +37,10 @@ export default [
   (md) => md.use(imsize, { enableInlineStyling: true }),
   video,
   table,
-  note,
+  (md) => md.use(note, { notesAutotitle: false, log: console }),
   cut,
   meta,
   deflist,
   link,
+  mention,
 ];

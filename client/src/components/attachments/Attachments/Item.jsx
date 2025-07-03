@@ -11,10 +11,13 @@ import { useTranslation } from 'react-i18next';
 import { Item as GalleryItem } from 'react-photoswipe-gallery';
 
 import selectors from '../../../selectors';
+import Config from '../../../constants/Config';
 import Encodings from '../../../constants/Encodings';
 import { AttachmentTypes } from '../../../constants/Enums';
 import ItemContent from './ItemContent';
 import ContentViewer from './ContentViewer';
+import PdfViewer from './PdfViewer';
+import CsvViewer from './CsvViewer';
 
 import styles from './Item.module.scss';
 
@@ -38,10 +41,8 @@ const Item = React.memo(({ id, isVisible }) => {
       switch (attachment.data.mimeType) {
         case 'application/pdf':
           content = (
-            // eslint-disable-next-line jsx-a11y/alt-text
-            <object
-              data={attachment.data.url}
-              type={attachment.data.mimeType}
+            <PdfViewer
+              src={attachment.data.url}
               className={classNames(styles.content, styles.contentViewer)}
             />
           );
@@ -59,6 +60,15 @@ const Item = React.memo(({ id, isVisible }) => {
           );
 
           break;
+        case 'text/csv':
+          content = (
+            <CsvViewer
+              src={attachment.data.url}
+              className={classNames(styles.content, styles.contentViewer)}
+            />
+          );
+
+          break;
         case 'video/mp4':
         case 'video/ogg':
         case 'video/webm':
@@ -70,13 +80,21 @@ const Item = React.memo(({ id, isVisible }) => {
           break;
         default:
           if (attachment.data.encoding === Encodings.UTF8) {
-            content = (
-              <ContentViewer
-                src={attachment.data.url}
-                filename={attachment.data.filename}
-                className={classNames(styles.content, styles.contentViewer)}
-              />
-            );
+            if (attachment.data.sizeInBytes <= Config.MAX_SIZE_IN_BYTES_TO_DISPLAY_CONTENT) {
+              content = (
+                <ContentViewer
+                  src={attachment.data.url}
+                  filename={attachment.data.filename}
+                  className={classNames(styles.content, styles.contentViewer)}
+                />
+              );
+            } else {
+              content = (
+                <span className={classNames(styles.content, styles.contentError)}>
+                  {t('common.contentOfThisAttachmentIsTooBigToDisplay')}
+                </span>
+              );
+            }
           } else {
             content = (
               <span className={classNames(styles.content, styles.contentError)}>

@@ -20,6 +20,9 @@ export default class extends BaseModel {
     description: attr(),
     dueDate: attr(),
     stopwatch: attr(),
+    commentsTotal: attr({
+      getDefault: () => 0,
+    }),
     createdAt: attr({
       getDefault: () => new Date(),
     }),
@@ -402,13 +405,32 @@ export default class extends BaseModel {
         });
 
         break;
-      case ActionTypes.ACTIVITIES_FETCH:
+      case ActionTypes.COMMENT_CREATE:
+      case ActionTypes.COMMENT_CREATE_HANDLE: {
+        const cardModel = Card.withId(payload.comment.cardId);
+
+        if (cardModel) {
+          cardModel.commentsTotal += 1;
+        }
+
+        break;
+      }
+      case ActionTypes.COMMENT_DELETE_HANDLE: {
+        const cardModel = Card.withId(payload.comment.cardId);
+
+        if (cardModel) {
+          cardModel.commentsTotal -= 1;
+        }
+
+        break;
+      }
+      case ActionTypes.ACTIVITIES_IN_CARD_FETCH:
         Card.withId(payload.cardId).update({
           isActivitiesFetching: true,
         });
 
         break;
-      case ActionTypes.ACTIVITIES_FETCH__SUCCESS:
+      case ActionTypes.ACTIVITIES_IN_CARD_FETCH__SUCCESS:
         Card.withId(payload.cardId).update({
           isActivitiesFetching: false,
           isAllActivitiesFetched: payload.activities.length < Config.ACTIVITIES_LIMIT,
@@ -607,7 +629,6 @@ export default class extends BaseModel {
 
     this.customFieldValues.delete();
     this.comments.delete();
-    this.activities.delete();
   }
 
   deleteWithClearable() {
