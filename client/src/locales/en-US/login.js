@@ -2,8 +2,10 @@ export default {
   translation: {
     common: {
       activeUsersLimitReached: 'Active users limit reached',
+      adminLoginRequiredToInitializeInstance: 'Admin login required to initialize instance',
       emailAlreadyInUse: 'E-mail already in use',
       emailOrUsername: 'E-mail or username',
+      iHaveReadAndAgreeToTheseTerms: 'I have read and agree to these Terms',
       invalidCredentials: 'Invalid credentials',
       invalidEmailOrUsername: 'Invalid e-mail or username',
       invalidPassword: 'Invalid password',
@@ -17,9 +19,15 @@ export default {
       unknownError: 'Unknown error, try again later',
       useSingleSignOn: 'Use single sign-on',
       usernameAlreadyInUse: 'Username already in use',
+      whoops_title: 'Whoops!',
     },
 
     action: {
+      cancelAndClose: 'Cancel and close',
+      continue: 'Continue',
+      debugSso: 'Debug SSO',
+      goBack: 'Go back',
+      goHome: 'Go home',
       logIn: 'Log in',
       logInWithSso: 'Log in with SSO',
     },

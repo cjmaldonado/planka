@@ -5,22 +5,24 @@
 
 import upperFirst from 'lodash/upperFirst';
 import camelCase from 'lodash/camelCase';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, Icon } from 'semantic-ui-react';
 import { push } from '../../../lib/redux-router';
-import { usePopup } from '../../../lib/popup';
+import { closePopup, usePopup } from '../../../lib/popup';
 
 import selectors from '../../../selectors';
+import { BoardShortcutsContext } from '../../../contexts';
 import Paths from '../../../constants/Paths';
-import { BoardMembershipRoles, CardTypes, ListTypes } from '../../../constants/Enums';
+import ClipboardTypes from '../../../constants/ClipboardTypes';
+import { BoardMembershipRoles, CardTypes } from '../../../constants/Enums';
 import ProjectContent from './ProjectContent';
 import StoryContent from './StoryContent';
 import InlineContent from './InlineContent';
 import EditName from './EditName';
-import ActionsStep from './ActionsStep';
+import CardActionsStep from '../CardActionsStep';
 
 import styles from './Card.module.scss';
 import globalStyles from '../../../styles.module.scss';
@@ -43,13 +45,27 @@ const Card = React.memo(({ id, isInline }) => {
     return selectIsCardWithIdRecent(state, id);
   });
 
+  const isCut = useSelector((state) => {
+    const clipboard = selectors.selectClipboard(state);
+    return clipboard && clipboard.type === ClipboardTypes.CUT && card.id === clipboard.cardId;
+  });
+
   const canUseActions = useSelector((state) => {
+    const isManager = selectors.selectIsCurrentUserManagerForCurrentProject(state);
+
+    if (isManager) {
+      return true;
+    }
+
     const boardMembership = selectors.selectCurrentUserMembershipForCurrentBoard(state);
     return !!boardMembership && boardMembership.role === BoardMembershipRoles.EDITOR;
   });
 
   const dispatch = useDispatch();
   const [isEditNameOpened, setIsEditNameOpened] = useState(false);
+  const [, , handleCardMouseEnter, handleCardMouseLeave] = useContext(BoardShortcutsContext);
+
+  const actionsPopupRef = useRef(null);
 
   const handleClick = useCallback(() => {
     if (document.activeElement) {
@@ -59,6 +75,33 @@ const Card = React.memo(({ id, isInline }) => {
     dispatch(push(Paths.CARDS.replace(':id', id)));
   }, [id, dispatch]);
 
+  const handleMouseEnter = useCallback(() => {
+    handleCardMouseEnter(
+      id,
+      () => {
+        setIsEditNameOpened(true);
+      },
+      (step) => {
+        closePopup();
+
+        actionsPopupRef.current.open({
+          defaultStep: step,
+        });
+      },
+    );
+  }, [id, handleCardMouseEnter]);
+
+  const handleContextMenu = useCallback((event) => {
+    if (!actionsPopupRef.current) {
+      return;
+    }
+
+    event.preventDefault();
+
+    closePopup();
+    actionsPopupRef.current.open();
+  }, []);
+
   const handleNameEdit = useCallback(() => {
     setIsEditNameOpened(true);
   }, []);
@@ -67,7 +110,7 @@ const Card = React.memo(({ id, isInline }) => {
     setIsEditNameOpened(false);
   }, []);
 
-  const ActionsPopup = usePopup(ActionsStep);
+  const CardActionsPopup = usePopup(CardActionsStep);
 
   if (isEditNameOpened) {
     return <EditName cardId={id} onClose={handleEditNameClose} />;
@@ -110,28 +153,27 @@ const Card = React.memo(({ id, isInline }) => {
           <div
             className={classNames(
               styles.content,
-              list.type === ListTypes.CLOSED && styles.contentDisabled,
+              card.isClosed && styles.contentDisabled,
+              isCut && styles.contentCut,
             )}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleCardMouseLeave}
             onClick={handleClick}
+            onContextMenu={handleContextMenu}
           >
             <Content cardId={id} />
             {colorLineNode}
           </div>
           {canUseActions && (
-            <ActionsPopup cardId={id} onNameEdit={handleNameEdit}>
+            <CardActionsPopup ref={actionsPopupRef} cardId={id} onNameEdit={handleNameEdit}>
               <Button className={styles.actionsButton}>
                 <Icon fitted name="pencil" size="small" />
               </Button>
-            </ActionsPopup>
+            </CardActionsPopup>
           )}
         </>
       ) : (
-        <span
-          className={classNames(
-            styles.content,
-            list.type === ListTypes.CLOSED && styles.contentDisabled,
-          )}
-        >
+        <span className={classNames(styles.content, card.isClosed && styles.contentDisabled)}>
           <Content cardId={id} />
           {colorLineNode}
         </span>
